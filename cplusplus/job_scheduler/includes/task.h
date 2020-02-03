@@ -48,7 +48,7 @@ public:
 
 signals:
     void taskCompleted(const QString& name);
-    void requestTask(const QString& name);
+    void requestTask(const QString& name, const QString& waitingName);
 
 private:
     QString m_Name;

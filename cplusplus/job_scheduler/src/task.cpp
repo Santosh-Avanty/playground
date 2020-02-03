@@ -51,11 +51,9 @@ void Task::executeTask()
 {
     if (m_Dependencies.isEmpty()) {
         qDebug() << "echo I am task " << m_Name << " completed.";
-        m_isWaiting = false;
         setIsCompleted(true);
     } else {
-        m_isWaiting = true;
-        emit requestTask(m_Dependencies[0]);
+        emit requestTask(m_Dependencies[0], m_Name);
     }
 }
 
@@ -65,11 +63,7 @@ void Task::executeTask()
  */
 void Task::updateTask(const QString& name)
 {
-    if (m_isCompleted && !m_isWaiting)
-        return;
-
     if (m_Dependencies.contains(name)) {
         m_Dependencies.removeOne(name);
-        executeTask();
     }
 }
