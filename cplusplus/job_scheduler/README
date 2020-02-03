@@ -1,0 +1,11 @@
+Job_scheduler read me file.
+
+Dependecies = Qt, Project has ben implemented on Qt framework considering the job-spec.
+
+Things still to be done.
+Enhance application using mutlithreading.
+Add support for customised addition.
+Unit -tests implemenation.
+
+Steps to execute.
+Open in Qt-creator, build and run
