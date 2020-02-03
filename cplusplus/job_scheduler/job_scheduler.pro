@@ -15,8 +15,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        src/filereader.cpp \
-        src/main.cpp
+        src/jobscheduler.cpp \
+        src/main.cpp \
+        src/task.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -24,6 +25,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    includes/filereader.h
+    includes/jobscheduler.h \
+    includes/task.h
 
 INCLUDEPATH += $$PWD/includes
