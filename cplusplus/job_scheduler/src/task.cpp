@@ -16,12 +16,11 @@
  * \param dependencies
  * \param parent
  */
-Task::Task(const QString& name, const QString& dependencies, QObject *parent) : QObject(parent)
+Task::Task(const QString& name, const QString& dependencies, QObject *parent) : QThread(parent)
 {
     m_isCompleted = false;
     m_Name = name;
     m_Dependencies = dependencies.split(',', QString::SkipEmptyParts);
-    m_isWaiting = false;
 }
 
 /*!
@@ -47,6 +46,12 @@ void Task::setIsCompleted(const bool isCompleted)
 /*!
  * \brief Task::executeTask
  */
+void Task::run()
+{
+    executeTask();
+    exec();
+}
+
 void Task::executeTask()
 {
     if (m_Dependencies.isEmpty()) {

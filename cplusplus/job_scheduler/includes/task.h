@@ -8,9 +8,9 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include <QObject>
+#include <QThread>
 
-class Task : public QObject
+class Task : public QThread
 {
     Q_OBJECT
 
@@ -34,6 +34,11 @@ public:
      * \param isCompleted
      */
     void setIsCompleted(const bool isCompleted);
+
+    /*!
+     * \brief executeTask
+     */
+    void run();
 
     /*!
      * \brief executeTask

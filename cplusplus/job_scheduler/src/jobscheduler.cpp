@@ -30,7 +30,12 @@ JobScheduler::JobScheduler(const int argc, char* argv[], QObject *parent) : QObj
        }
     }
 
-    tryExecuteTask(m_TaskName);
+    // Execute the task if it is found otherwise exit withe error.
+    if (m_TasksMap.contains(m_TaskName)) {
+         m_TasksMap[m_TaskName]->start();
+    } else {
+        exitWithError();
+    }
 }
 
 JobScheduler::~JobScheduler()
@@ -63,19 +68,43 @@ bool JobScheduler::populateDataFromFiles(const QString& fileName)
 
         // Create task object and connect signals
         Task* currentTask = new Task(name, dependecies);
-        // Propogare completed event to job-scheduler
-        connect(currentTask, &Task::taskCompleted, this, [this](const QString& name) {
+
+        // After a task is complted check if it is final task or continue executing previous task.
+        connect(currentTask, &Task::taskCompleted, this , [this](const QString& name) {
+
+            // Final task, done exit.
             if (name == m_TaskName) {
                 exitApplication();
             } else {
-                emit updateTasks(name);
-                m_TasksMap[m_WaitingStack.pop()]->executeTask();
+                // update dependecies list of each task.
+                for (Task* taskObj : m_TasksMap) {
+                    taskObj->updateTask(name);
+                }
+
+                // continue executing previous task.
+                const QString waitName = m_WaitingStack.pop();
+                // Execute the task if it is found otherwise exit withe error.
+                if (m_TasksMap.contains(waitName)) {
+                     m_TasksMap[waitName]->executeTask();
+                } else {
+                    exitWithError();
+                }
             }
+
         });
-        // Serve the request from task objects on dependencies.
-        connect(currentTask, &Task::requestTask, this, &JobScheduler::tryExecuteTask);
-        // Propogate completed event to other tasks.
-        connect(this, &JobScheduler::updateTasks, currentTask, &Task::updateTask);
+
+        // execute requested or dependecy task.
+        connect(currentTask, &Task::requestTask, this , [this](const QString& name, const QString& waitName) {
+            m_WaitingStack.push(waitName);
+
+            // Execute the task if it is found otherwise exit withe error.
+            if (m_TasksMap.contains(name)) {
+                 m_TasksMap[name]->start();
+            } else {
+                exitWithError();
+            }
+
+        });
 
         m_TasksMap.insert(name, currentTask);
     }
